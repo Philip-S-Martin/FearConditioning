@@ -10,7 +10,7 @@ function FearConditioning_V3_2 ( debug_mode )
 
     %Set the URL for the Google Docs stage spreadsheet.
     %url = 'https://docs.google.com/spreadsheets/d/1dC5XCbhtVAIS2ZHhFVlgdRLpfU5lUbNUcoYgYCt-IzA/pub?output=tsv';  
-    url = 'https://docs.google.com/spreadsheets/d/1a5Nl9cHM6SL30kVFMivb3iiXoGOKciewjXocmwyJHIs/pub?output=tsv';
+    url = 'https://docs.google.com/spreadsheets/d/1C7OGAwdmfSaFS5CukWy8G5Yq2TLHNZxyOVsPT66iTpI/pub?output=tsv';
 
     %Make the graphical user interface
     handles = Make_GUI();
@@ -160,6 +160,26 @@ function RunBehavior(handles)
                 %Create a schedule to deliver VNS (multiply by 1000 to convert to units of ms)
                 vns_schedule = cumsum(vns_intervals) * 1000;
                 
+        elseif (strcmpi(handles.vns_type, 'Throughout'))
+                
+            %In "Throughout" mode, VNS begins at the beginning of the first
+            %sound, and it ends at the ending of the last sound.
+            
+            if (~isempty(sound_schedule))
+                %Grab the start time of the first sound
+                first_sound_start = sound_schedule(1);
+                
+                %Grab the end time of the last sound
+                last_sound_end = sound_schedule_end_times(end);
+                
+                %Grab the VNS interval (time from one VNS start to the next
+                %VNS start)
+                vns_interval = handles.vns_interval;
+                
+                %Set the VNS schedule
+                vns_schedule = first_sound_start:vns_interval:last_sound_end;
+            end
+            
         else
             
             %If the stims are not "unpaired", then they are likely "paired". There are a few choices for "paired" stimulation.
@@ -864,7 +884,8 @@ function stages = GetStageInfo(url)
         'VNS Duration', 'vns_duration'; ...
         'Record Video', 'record_video'; ...
         'Extra Time', 'extra_time'; ...
-        'Stims Per Sound', 'stims_per_sound' ...
+        'Stims Per Sound', 'stims_per_sound'; ...
+        'VNS Interval', 'vns_interval' ...
         };
 
     %Step through each column heading.
@@ -958,7 +979,7 @@ function sound_duration = GetSoundDuration ( sound_name )
     elseif (strcmpi(sound_name, 'twitter'))
         sound_duration = 6;
     elseif (strcmpi(sound_name, '9khz'))
-        sound_duration = 6;
+        sound_duration = 30;
     elseif (strcmpi(sound_name, '4khz'))
         sound_duration = 6;
     elseif (strcmpi(sound_name, '2khz10s'))
