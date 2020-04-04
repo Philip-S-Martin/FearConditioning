@@ -1,3 +1,6 @@
+% REQUIRES: https://www.mathworks.com/matlabcentral/fileexchange/47982-gui-layout-toolbox
+% Maybe a few other things, but I am not sure...
+
 function FearConditioning_V3_2 ( debug_mode )
 
     if (nargin < 1)
